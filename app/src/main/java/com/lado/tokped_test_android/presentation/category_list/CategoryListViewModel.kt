@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-
 @HiltViewModel
 class CategoryListViewModel @Inject constructor(
     private val getCategoryListUseCase: GetCategoriesUseCase
@@ -28,19 +27,34 @@ class CategoryListViewModel @Inject constructor(
         getCategoryListUseCase().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    _state.value = CategoryListState(categories = result.data ?: emptyList())
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        categories = result.data ?: emptyList(),
+                        error = ""
+                    )
                 }
                 is Resource.Error -> {
-                    _state.value = CategoryListState(
-                        error = result.message ?: "An unexpected error occured"
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        error = result.message ?: "An unexpected error occurred"
                     )
                 }
                 is Resource.Loading -> {
-                    _state.value = CategoryListState(isLoading = true)
+                    _state.value = _state.value.copy(
+                        isLoading = true
+                    )
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-
+    fun toggleCategory(categoryId: String) {
+        val currentIds = _state.value.expandedCategoryIds
+        val newIds = if (currentIds.contains(categoryId)) {
+            currentIds - categoryId
+        } else {
+            currentIds + categoryId
+        }
+        _state.value = _state.value.copy(expandedCategoryIds = newIds)
+    }
 }
