@@ -1,4 +1,4 @@
-package com.lado.tokped_test_android.ui.theme
+package com.lado.tokped_test_android.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
