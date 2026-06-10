@@ -6,5 +6,6 @@ data class Category(
     val url: String,
     val iconImageUrl: String,
     val parentName: String,
-    val child: List<Category>
+    val child: List<Category>,
+    val tree: Int?
 )

@@ -4,8 +4,12 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Icon
@@ -57,22 +61,38 @@ fun CategoryItem(
         }
 
         if (isExpanded && category.child.isNotEmpty()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp) // Indent sub-categories for tree visualization
-            ) {
-                category.child.forEach { subCategory ->
-                    CategoryItem(
-                        category = subCategory,
-                        isExpanded = expandedCategoryIds.contains(subCategory.id),
-                        onHeaderClick = { onToggleCategory(subCategory.id) },
-                        onItemClick = onItemClick,
-                        expandedCategoryIds = expandedCategoryIds,
-                        onToggleCategory = onToggleCategory
-                    )
+            category.tree?.let {
+                if (it < 2) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 24.dp) // Indent sub-categories for tree visualization
+                    ) {
+                        category.child.forEach { subCategory ->
+                            CategoryItem(
+                                category = subCategory,
+                                isExpanded = expandedCategoryIds.contains(subCategory.id),
+                                onHeaderClick = { onToggleCategory(subCategory.id) },
+                                onItemClick = onItemClick,
+                                expandedCategoryIds = expandedCategoryIds,
+                                onToggleCategory = onToggleCategory
+                            )
+                        }
+                    }
+                } else {
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth().padding(start = 24.dp)
+                    ) {
+                        items(category.child) { subCategory ->
+                            CategoryRowItem(
+                                category = subCategory,
+                                onItemClick = onItemClick,
+                            )
+                        }
+                    }
                 }
             }
+
         }
     }
 }

@@ -13,5 +13,6 @@ data class Category(
     val identifier: String = "",
     val name: String = "",
     val parentName: String = "",
-    val url: String = ""
+    val url: String = "",
+    val tree: Int? = 0
 )

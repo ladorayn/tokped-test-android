@@ -11,7 +11,8 @@ fun CategoryDto.toDomain(): Category {
         url = url.orEmpty(),
         iconImageUrl = iconImageUrl.orEmpty(),
         parentName = parentName.orEmpty(),
-        child = child?.map { it.toDomain() } ?: emptyList()
+        child = child.map { it.toDomain() } ?: emptyList(),
+        tree = tree?.or(0)
     )
 }
 
@@ -22,6 +23,7 @@ fun CategoryXDto.toDomain(): Category {
         url = url.orEmpty(),
         iconImageUrl = icon_image_url.orEmpty(),
         parentName = "",
-        child = child?.map { it.toDomain() } ?: emptyList()
+        child = child?.map { it.toDomain() } ?: emptyList(),
+        tree = tree?.or(0),
     )
 }
