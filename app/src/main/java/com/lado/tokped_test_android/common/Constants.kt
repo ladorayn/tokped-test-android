@@ -2,6 +2,9 @@ package com.lado.tokped_test_android.common
 
 object Constants {
 
+
+    val BASE_URL = "https://hades.tokopedia.com/"
+
     var MOCK_RESPONSE = """
         {
           "data": {

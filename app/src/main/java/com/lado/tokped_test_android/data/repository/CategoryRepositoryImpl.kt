@@ -10,7 +10,6 @@ class CategoryRepositoryImpl @Inject constructor(
     private val api: CategoryApi
 ) : CategoryRepository {
     override suspend fun getCategories(): List<Category> {
-        // Live API integration mapping Category DTO to Domain models
-        return api.getCategories().map { it.toDomain() }
+        return api.getCategories().data.categories.map { it.toDomain() }
     }
 }

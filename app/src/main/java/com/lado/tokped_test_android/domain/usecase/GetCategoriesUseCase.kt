@@ -14,6 +14,7 @@ class GetCategoriesUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<Resource<List<Category>>> = flow {
         try {
+            print("CHECK BROO LAODING")
             emit(Resource.Loading())
             val categories = repository.getCategories()
             emit(Resource.Success(categories))
