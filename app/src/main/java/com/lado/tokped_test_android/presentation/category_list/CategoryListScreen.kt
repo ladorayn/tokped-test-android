@@ -8,9 +8,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.lado.tokped_test_android.presentation.category_list.components.CategoryItem
 
@@ -20,7 +22,7 @@ fun CategoryListScreen(
     viewModel: CategoryListViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
-    val state = viewModel.state.value
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {

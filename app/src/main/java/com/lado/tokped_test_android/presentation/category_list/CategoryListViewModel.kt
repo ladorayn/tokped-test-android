@@ -1,14 +1,16 @@
 package com.lado.tokped_test_android.presentation.category_list
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lado.tokped_test_android.common.Resource
 import com.lado.tokped_test_android.domain.usecase.GetCategoriesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,8 +18,8 @@ class CategoryListViewModel @Inject constructor(
     private val getCategoryListUseCase: GetCategoriesUseCase
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(CategoryListState())
-    val state: State<CategoryListState> = _state
+    private val _state = MutableStateFlow(CategoryListState())
+    val state: StateFlow<CategoryListState> = _state.asStateFlow()
 
     init {
         getCategories()
@@ -27,34 +29,37 @@ class CategoryListViewModel @Inject constructor(
         getCategoryListUseCase().onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        categories = result.data ?: emptyList(),
-                        error = ""
-                    )
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            categories = result.data ?: emptyList(),
+                            error = ""
+                        )
+                    }
                 }
                 is Resource.Error -> {
-                    _state.value = _state.value.copy(
-                        isLoading = false,
-                        error = result.message ?: "An unexpected error occurred"
-                    )
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = result.message ?: "An unexpected error occurred"
+                        )
+                    }
                 }
                 is Resource.Loading -> {
-                    _state.value = _state.value.copy(
-                        isLoading = true
-                    )
+                    _state.update { it.copy(isLoading = true) }
                 }
             }
         }.launchIn(viewModelScope)
     }
 
     fun toggleCategory(categoryId: String) {
-        val currentIds = _state.value.expandedCategoryIds
-        val newIds = if (currentIds.contains(categoryId)) {
-            currentIds - categoryId
-        } else {
-            currentIds + categoryId
+        _state.update { currentState ->
+            val newIds = if (currentState.expandedCategoryIds.contains(categoryId)) {
+                currentState.expandedCategoryIds - categoryId
+            } else {
+                currentState.expandedCategoryIds + categoryId
+            }
+            currentState.copy(expandedCategoryIds = newIds)
         }
-        _state.value = _state.value.copy(expandedCategoryIds = newIds)
     }
 }
